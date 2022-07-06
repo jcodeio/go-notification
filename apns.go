@@ -43,7 +43,7 @@ func updateJWT() {
 	// get values from env file
 	teamID := os.Getenv("APNS_TEAMID")
 	if teamID == "" {
-		fmt.Printf("APNS_TEAMID Required in .env file")
+		fmt.Printf("APNS_TEAMID Required in .env file\n")
 		os.Exit(1)
 	}
 	p8Path := os.Getenv("APNS_P8_PATH")
