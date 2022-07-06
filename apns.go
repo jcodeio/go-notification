@@ -11,8 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"jcode.io/go/db"
-	"jcode.io/go/file"
+	"github.com/jcodeio/go-common"
 )
 
 var lastJWTUpdate time.Time
@@ -52,7 +51,7 @@ func updateJWT() {
 		fmt.Printf("APNS_P8_PATH Required in .env file")
 		os.Exit(1)
 	}
-	if !file.Exists(p8Path) {
+	if !common.FileExists(p8Path) {
 		fmt.Printf("apns p8 file not found")
 		os.Exit(1)
 	}
@@ -206,7 +205,7 @@ func sendAPNSRequest(req *http.Request, token string) bool {
 }
 func deleteToken(token string) {
 	query := fmt.Sprintf(`delete from jcode.device_token where token = '%s';`, token)
-	_, delErr := db.PG.Exec(query)
+	_, delErr := common.PG.Exec(query)
 	if delErr != nil {
 		fmt.Println(delErr)
 		return

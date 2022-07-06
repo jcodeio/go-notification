@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"jcode.io/go/db"
+	"github.com/jcodeio/go-common"
 )
 
 func SendToUser(userID int, title string, body string, category string, clearFirst bool) {
@@ -14,7 +14,7 @@ func SendToUser(userID int, title string, body string, category string, clearFir
 
 	fmt.Println(query)
 
-	tokenRows, getUserDataErr := db.PG.Query(query)
+	tokenRows, getUserDataErr := common.PG.Query(query)
 	defer tokenRows.Close()
 
 	if getUserDataErr != nil {
