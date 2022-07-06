@@ -21,7 +21,7 @@ var HostUrl string
 var apnsTopic string
 var apnsSound string
 
-func init() {
+func Configure() {
 	// get jwt
 	lastJWTUpdate = time.Now()
 	updateJWT()
