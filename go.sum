@@ -1,5 +1,3 @@
-github.com/jcodeio/go-common v0.0.0-20220706021015-ab4cbb8b6e2a h1:iHgacmu/IebURUKh6GfyLfTvWT+n8/PZ6T9r+DacPYE=
-github.com/jcodeio/go-common v0.0.0-20220706021015-ab4cbb8b6e2a/go.mod h1:jgY96nP7TlVl6ZcYH3r+b4R5dE3ojWsVCKhXn4q04Jw=
 github.com/jcodeio/go-common v0.0.0-20220706023602-57c50b2b2faf h1:HgjaDsWBPcaVN/U2CkwRMMcGAQiFaVXU76lUGJBT5+0=
 github.com/jcodeio/go-common v0.0.0-20220706023602-57c50b2b2faf/go.mod h1:jgY96nP7TlVl6ZcYH3r+b4R5dE3ojWsVCKhXn4q04Jw=
 github.com/lib/pq v1.10.6 h1:jbk+ZieJ0D7EVGJYpL9QTz7/YW6UHbmdnZWYyK5cdBs=
