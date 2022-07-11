@@ -19,10 +19,10 @@ func getPendingNotifications() {
 	var now = time.Now().UTC().Unix()
 	// get notifications we passed
 	// only get users in respective release
-	query := fmt.Sprintf(`select distinct pn.user_id, dt.token, pn.notification_id as notification_id, pn.header, pn.message, pn.category, pn.type from public.pending_notification pn 
-	join public.device_token dt on dt.user_id = pn.user_id 
-	join public.user us on us.user_id = pn.user_id 
-	join (select max(notification_id) as notification_id, user_id from public.pending_notification pn2 where pn2.sched_date <= to_timestamp(%d) 
+	query := fmt.Sprintf(`select distinct pn.user_id, dt.token, pn.notification_id as notification_id, pn.header, pn.message, pn.category, pn.type from jcode.pending_notification pn 
+	join jcode.device_token dt on dt.user_id = pn.user_id 
+	join jcode.user us on us.user_id = pn.user_id 
+	join (select max(notification_id) as notification_id, user_id from jcode.pending_notification pn2 where pn2.sched_date <= to_timestamp(%d) 
 	group by user_id) pn2 on pn.notification_id = pn2.notification_id 
 	where pn.sched_date <= to_timestamp(%d) and dt.type = '%s' and us.release_mode = '%s';`, now, now, common.Mode, common.Mode)
 
@@ -50,7 +50,7 @@ func getPendingNotifications() {
 
 		// set pending to active
 		if notifType == "session" {
-			_, err := common.PG.Exec(fmt.Sprintf(`update public.user set pending_answer = true where user_id = %d;`, userID))
+			_, err := common.PG.Exec(fmt.Sprintf(`update jcode.user set pending_answer = true where user_id = %d;`, userID))
 			common.CheckError(err)
 		}
 
@@ -67,6 +67,6 @@ func getPendingNotifications() {
 func notificationLogAndDeleteQuery(userID int, notificationID int) string {
 	// move to logs and delete from pending
 	// todo history
-	query := fmt.Sprintf(`delete from public.pending_notification where notification_id <= %d and user_id = %d;`, notificationID, userID)
+	query := fmt.Sprintf(`delete from jcode.pending_notification where notification_id <= %d and user_id = %d;`, notificationID, userID)
 	return query
 }
