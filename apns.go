@@ -21,7 +21,7 @@ var HostUrl string
 var apnsTopic string
 var apnsSound string
 
-func Configure() {
+func APNSConfigure() {
 	// get jwt
 	lastJWTUpdate = time.Now()
 	updateJWT()
@@ -43,7 +43,7 @@ func updateJWT() {
 	// get values from env file
 	teamID := os.Getenv("APNS_TEAMID")
 	if teamID == "" {
-		fmt.Printf("APNS_TEAMID Required in .env file\n")
+		fmt.Printf("APNS_TEAMID Required in .env file")
 		os.Exit(1)
 	}
 	p8Path := os.Getenv("APNS_P8_PATH")
@@ -97,6 +97,10 @@ type FailedResponse struct {
 var client = &http.Client{}
 
 func SendAPNSToDevice(token string, title string, body string, category string, clearFirst bool) bool {
+	if lastJWTUpdate.IsZero() {
+		panic("notification.APNSConfigure() not called - typically called in main after env variables have loaded")
+	}
+
 	// check if jwt is older than an hour, if so refresh
 	if lastJWTUpdate.Add(time.Minute*55).Unix() < time.Now().Unix() {
 		updateJWT()
@@ -116,12 +120,10 @@ func SendAPNSToDevice(token string, title string, body string, category string, 
 	}
 
 	dataBytes, bodyErr := json.Marshal(data)
-	if bodyErr != nil {
-		fmt.Println(bodyErr)
-	}
+	common.CheckError(bodyErr)
 
 	if clearFirst {
-		// if the clear fails, no reason to try the correct one
+		// if the clear fails, no reason to try the actual one
 		if !clearPastNotifications(token) {
 			return false
 		}
@@ -129,10 +131,7 @@ func SendAPNSToDevice(token string, title string, body string, category string, 
 
 	// create notification post request
 	req, createPostErr := http.NewRequest("POST", getNotificationURL(token), bytes.NewReader(dataBytes))
-	if createPostErr != nil {
-		fmt.Println(createPostErr)
-		return false
-	}
+	common.CheckError(createPostErr)
 
 	// apns headers
 	req.Header.Set("apns-push-type", "alert")
@@ -155,15 +154,13 @@ func clearPastNotifications(token string) bool {
 			Badge: 0,
 		},
 	}
+
 	dataBytes, bodyErr := json.Marshal(data)
-	if bodyErr != nil {
-		fmt.Println(bodyErr)
-	}
+	common.CheckError(bodyErr)
+
 	req, createPostErr := http.NewRequest("POST", getNotificationURL(token), bytes.NewReader(dataBytes))
-	if createPostErr != nil {
-		fmt.Println(createPostErr)
-		return false
-	}
+	common.CheckError(createPostErr)
+
 	// apns headers
 	req.Header.Set("apns-topic", apnsTopic)
 	req.Header.Set("Authorization", auth)
@@ -173,15 +170,8 @@ func clearPastNotifications(token string) bool {
 
 func sendAPNSRequest(req *http.Request, token string) bool {
 	response, apnsPostErr := client.Do(req)
-
-	if apnsPostErr != nil {
-		fmt.Printf("failed to send notification, error: %s", apnsPostErr)
-		return false
-	}
-
+	common.CheckError(apnsPostErr)
 	defer response.Body.Close()
-
-	fmt.Println(response)
 
 	if response.StatusCode != http.StatusOK {
 		var failedResp FailedResponse

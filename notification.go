@@ -17,16 +17,12 @@ func SendToUser(userID int, title string, body string, category string, clearFir
 	tokenRows, getUserDataErr := common.PG.Query(query)
 	defer tokenRows.Close()
 
-	if getUserDataErr != nil {
-		fmt.Println(getUserDataErr)
-		return
-	}
+	common.CheckError(getUserDataErr)
+
 	for tokenRows.Next() {
-		if scanErr := tokenRows.Scan(&token); scanErr != nil {
-			fmt.Println(scanErr)
-			continue
-		}
-		fmt.Println(token)
+		scanErr := tokenRows.Scan(&token)
+		common.CheckError(scanErr)
+
 		SendAPNSToDevice(token, title, body, category, clearFirst)
 	}
 }
