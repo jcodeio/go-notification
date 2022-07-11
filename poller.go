@@ -24,7 +24,7 @@ func getPendingNotifications() {
 	join jcode.user us on us.user_id = pn.user_id 
 	join (select max(notification_id) as notification_id, user_id from jcode.pending_notification pn2 where pn2.sched_date <= to_timestamp(%d) 
 	group by user_id) pn2 on pn.notification_id = pn2.notification_id 
-	where pn.sched_date <= to_timestamp(%d) and dt.type = '%s' and us.release_mode = '%s';`, now, now, common.Mode, common.Mode)
+	where pn.sched_date <= to_timestamp(%d) and dt.type = '%s';`, now, now, common.Mode, common.Mode)
 
 	pendingRows, pendingNotifErr := common.PG.Query(query)
 	common.CheckError(pendingNotifErr)
